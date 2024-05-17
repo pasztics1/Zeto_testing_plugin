@@ -32,7 +32,7 @@ def main():
     PluginClient.of()
         .server('apidev.zetoserver.com')
         .vendor('Zeto Inc.')
-        .name('My new plugin')
+        .name('Automated testing plugin')
         .version('1.0.0')
         .operation_pdf()
         .plugin(MyReportPlugin)
