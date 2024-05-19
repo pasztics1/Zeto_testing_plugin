@@ -1,15 +1,15 @@
 import numpy as np
 import pyedflib
 import os
-import random
 import matplotlib.pyplot as plt
 
-# Parameters
+# Parameters; Use if a specific simple sin wave is needed. Save this instead of the random genearated one.
 frequency = 50  #Hz
 sampling_rate = 500  # samples per second
 duration = 10  # seconds
 magnitude = 100 #µV
 signal_name = f'{frequency}hz_{magnitude}uV_sin_wave.edf'
+plotting = false
 #
 
 
@@ -48,46 +48,48 @@ def save_to_edf(signal, sampling_rate):
     writer.close()
 
 
-# Generate and save sin wave
-sine_wave = generate_sin_wave(frequency, sampling_rate, duration, magnitude)
-
-'''
-# Checking for duplicate filenames
-if not os.path.exists(f'{signal_name}.edf'): 
-    save_to_edf(sine_wave, sampling_rate)
-else:
-    i = 1 
-    while os.path.exists(f'{signal_name}_{i}.edf'):
-        i += 1
-    save_to_edf(sine_wave, sampling_rate)
-'''
 
 ##Generating sample arrays 
-sample_count = 10 #The nr. of signals that will be generated
+sample_count = 10 #The nr. of signals that will be generated #The frequencies are hardcoded atm
 
-sampling = np.array(np.arange(0, duration, 1/sampling_rate))
+sampling = np.array(np.arange(0, duration, 1.0/sampling_rate))
 signals = np.zeros((sample_count,len(sampling)))
-random_freqs = np.random.randint(1, 10, sample_count)
+
+random_freqs = np.array([1,2,3,4,5,6,7,8,9,10])
+
+#random_freqs = np.random.randint(1, 10, sample_count)
 random_mags = np.random.randint(1, 30, sample_count)
+
 
 for i in range(sample_count):
     signals[i] = generate_sin_wave(random_freqs[i], sampling_rate, duration, random_mags[i])
     
-   
-
 combined_signal = np.sum(signals, axis = 0)
+
+
+# Checking for duplicate filenames
+if not os.path.exists(f'{signal_name}.edf'): 
+    save_to_edf(combined_signal, sampling_rate)
+else:
+    i = 1 
+    while os.path.exists(f'{signal_name}_{i}.edf'):
+        i += 1
+    save_to_edf(combined_signal, sampling_rate)
+
 
 save_to_edf(combined_signal,sampling_rate)
 
 
+
 #Plotting 
-plt.figure(figsize=(10, 6))
+if plotting:
+    plt.figure(figsize=(10, 6))
 
-plt.plot(sampling, combined_signal, color='black', label='Summed Signal')
+    plt.plot(sampling, combined_signal, color='black', label='Summed Signal')
 
-plt.title('Generated Signals')
-plt.xlabel('Time (seconds)')
-plt.ylabel('Amplitude μV')
-plt.legend()
-plt.grid(True)
-plt.show()
+    plt.title('Generated Signals')
+    plt.xlabel('Time (seconds)')
+    plt.ylabel('Amplitude μV')
+    plt.legend()
+    plt.grid(True)
+    plt.show()
