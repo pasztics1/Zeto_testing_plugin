@@ -1,0 +1,6 @@
+numpy
+matplotlib
+pyedflib
+scipy
+reportlab
+typing
