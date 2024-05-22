@@ -9,19 +9,17 @@ sampling_rate = 500  # samples per second
 duration = 10  # seconds
 magnitude = 100 #µV
 signal_name = f'{frequency}hz_{magnitude}uV_sin_wave.edf'
-plotting = false
+plotting = True
 #
 
 
-def generate_sin_wave(frequency, sampling_rate, duration, magnitude):
+def generate_sin_wave(frequency, sampling_rate, duration, magnitude, phase):
     t = np.linspace(0, duration, int(sampling_rate * duration), endpoint=False)
-    sin_wave = np.sin(2 * np.pi * frequency * t) * magnitude
+    sin_wave = np.sin(2 * np.pi * frequency * t + phase) * magnitude
     return sin_wave
 
 def save_to_edf(signal, sampling_rate):
     n_channels = 1
-    signal_length = len(signal)
-    file_duration = signal_length / sampling_rate #?
 
     #EDF writer
     writer = pyedflib.EdfWriter(signal_name, n_channels, file_type=pyedflib.FILETYPE_EDFPLUS) #https://pyedflib.readthedocs.io/en/latest/
@@ -55,14 +53,19 @@ sample_count = 10 #The nr. of signals that will be generated #The frequencies ar
 sampling = np.array(np.arange(0, duration, 1.0/sampling_rate))
 signals = np.zeros((sample_count,len(sampling)))
 
+
+#random -- "given"
 random_freqs = np.array([1,2,3,4,5,6,7,8,9,10])
 
 #random_freqs = np.random.randint(1, 10, sample_count)
 random_mags = np.random.randint(1, 30, sample_count)
 
+random_phase = np.random.uniform(-np.pi,np.pi, sample_count)
+print(random_phase)
+
 
 for i in range(sample_count):
-    signals[i] = generate_sin_wave(random_freqs[i], sampling_rate, duration, random_mags[i])
+    signals[i] = generate_sin_wave(random_freqs[i], sampling_rate, duration, random_mags[i], random_phase[i])
     
 combined_signal = np.sum(signals, axis = 0)
 
