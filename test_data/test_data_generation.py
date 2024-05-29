@@ -9,7 +9,7 @@ sampling_rate = 500  # samples per second
 duration = 10  # seconds
 magnitude = 100 #µV
 signal_name = f'{frequency}hz_{magnitude}uV_sin_wave.edf'
-plotting = True
+plotting = False
 #
 
 

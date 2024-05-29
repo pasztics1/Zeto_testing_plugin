@@ -1,5 +1,8 @@
 from reportlab.pdfgen import canvas
 import numpy as np
+import os
+import sys
+sys.path.append(os.path.join(os.path.dirname(__file__), 'test_data')) #meg meg lehetne csinalni
 from test_data_generation import sample_count
 
 def failure_detection(given_freqs, given_mags, given_phase, measured_freqs, measured_mags, measured_phase, sample_count=sample_count, threshold=0.1):
@@ -21,7 +24,7 @@ def failure_detection(given_freqs, given_mags, given_phase, measured_freqs, meas
 
 
 
-def generate_pdf_report(significant_freqs, significant_magnitudes, significant_phases, random_freqs, random_mags, random_phase):
+def generate_test_pdf_report(significant_freqs, significant_magnitudes, significant_phases, random_freqs, random_mags, random_phase):
     report_file_name = 'report-' + '12345' + '.pdf'#meta.capture_id
     c = canvas.Canvas(report_file_name)
 
@@ -59,3 +62,30 @@ def generate_pdf_report(significant_freqs, significant_magnitudes, significant_p
 
     c.save()
     return report_file_name
+
+
+
+def generate_pdf_report(significant_freqs, significant_magnitudes, significant_phases, report_file_name):
+    c = canvas.Canvas(report_file_name)
+
+    # Header information
+    c.drawString(100, 750, 'Subject name: ' + 'Example Example')
+    c.drawString(100, 730, 'Study recorded: ' + '00:00:00')
+    
+    # Measured signals
+    c.drawString(100, 630, 'Measured Frequencies, Magnitudes, and Phases:')
+    y = 610
+    
+    for electrode_freqs, electrode_mags, electrode_phases in zip(significant_freqs, significant_magnitudes, significant_phases):
+        for freq, mag, phase in zip(electrode_freqs, electrode_mags, electrode_phases):
+            c.drawString(100, y, f"Frequency: {freq:.2f} Hz, Magnitude: {mag:.2f}, Phase: {phase:.2f} radians")
+            y -= 20
+            if y < 50:  # If near the bottom of the page
+                c.showPage()  # Create a new page
+                y = 750  # Reset y position
+
+    c.save()
+    return report_file_name
+
+
+
